@@ -86,14 +86,14 @@ The official Patch bundle provided by ReVanced and the community.
 | 💊 Patch | 📜 Description | 🏹 Target Version |
 |:--------:|:--------------:|:-----------------:|
 | `disable-login-requirement` | Do not force login. | all |
-| `downloads` | Removes download restrictions and changes the default path to download to. | 27.8.3 |
-| `feed-filter` | Filters tiktok videos: removing ads, removing livestreams. | 27.8.3 |
+| `downloads` | Removes download restrictions and changes the default path to download to. | all |
+| `feed-filter` | Filters tiktok videos: removing ads, removing livestreams. | all |
 | `fix-google-login` | Allows logging in with a Google account. | all |
 | `hide-ads` | Removes ads from TikTok. | all |
 | `playback-speed` | Enables the playback speed option for all videos. | all |
-| `settings` | Adds ReVanced settings to TikTok. | 27.8.3 |
 | `show-seekbar` | Shows progress bar for all video. | all |
-| `sim-spoof` | Spoofs the information which is retrieved from the sim-card. | 27.8.3 |
+| `sim-spoof` | Spoofs the information which is retrieved from the sim-card. | all |
+| `tiktok-settings` | Adds ReVanced settings to TikTok. | all |
 </details>
 
 ### [📦 `com.zhiliaoapp.musically`](https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically)
@@ -102,14 +102,13 @@ The official Patch bundle provided by ReVanced and the community.
 | 💊 Patch | 📜 Description | 🏹 Target Version |
 |:--------:|:--------------:|:-----------------:|
 | `disable-login-requirement` | Do not force login. | all |
-| `downloads` | Removes download restrictions and changes the default path to download to. | 27.8.3 |
-| `feed-filter` | Filters tiktok videos: removing ads, removing livestreams. | 27.8.3 |
+| `downloads` | Removes download restrictions and changes the default path to download to. | all |
+| `feed-filter` | Filters tiktok videos: removing ads, removing livestreams. | all |
 | `fix-google-login` | Allows logging in with a Google account. | all |
 | `hide-ads` | Removes ads from TikTok. | all |
 | `playback-speed` | Enables the playback speed option for all videos. | all |
-| `settings` | Adds ReVanced settings to TikTok. | 27.8.3 |
 | `show-seekbar` | Shows progress bar for all video. | all |
-| `sim-spoof` | Spoofs the information which is retrieved from the sim-card. | 27.8.3 |
+| `sim-spoof` | Spoofs the information which is retrieved from the sim-card. | all |
 </details>
 
 ### [📦 `tv.twitch.android.app`](https://play.google.com/store/apps/details?id=tv.twitch.android.app)
@@ -151,7 +150,8 @@ The official Patch bundle provided by ReVanced and the community.
 
 | 💊 Patch | 📜 Description | 🏹 Target Version |
 |:--------:|:--------------:|:-----------------:|
-| `general-reddit-ads` | Removes general ads from the Reddit frontpage and subreddits. | 2022.43.0 |
+| `general-reddit-ads` | Removes general ads from the Reddit frontpage and subreddits. | all |
+| `layout-reddit-ads` | Removes layout ads from the Reddit frontpage and subreddits. | all |
 | `premium-icon-reddit` | Unlocks premium Reddit app icons. | all |
 </details>
 
@@ -189,6 +189,14 @@ The official Patch bundle provided by ReVanced and the community.
 | `disable-ads` | Disables ads in HexEditor. | all |
 </details>
 
+### [📦 `com.crunchyroll.crunchyroid`](https://play.google.com/store/apps/details?id=com.crunchyroll.crunchyroid)
+<details>
+
+| 💊 Patch | 📜 Description | 🏹 Target Version |
+|:--------:|:--------------:|:-----------------:|
+| `enable-downloads` | Enables downloads for Crunchyroll. | all |
+</details>
+
 ### [📦 `org.citra.citra_emu`](https://play.google.com/store/apps/details?id=org.citra.citra_emu)
 <details>
 
@@ -219,6 +227,14 @@ The official Patch bundle provided by ReVanced and the community.
 | 💊 Patch | 📜 Description | 🏹 Target Version |
 |:--------:|:--------------:|:-----------------:|
 | `promo-code-unlock` | Disables the validation of promo code. Any code will work to unlock all features. | all |
+</details>
+
+### [📦 `com.shervinkoushan.anyTracker`](https://play.google.com/store/apps/details?id=com.shervinkoushan.anyTracker)
+<details>
+
+| 💊 Patch | 📜 Description | 🏹 Target Version |
+|:--------:|:--------------:|:-----------------:|
+| `unlock-premium` | Unlocks all premium features. | all |
 </details>
 
 ### [📦 `com.teslacoilsw.launcher`](https://play.google.com/store/apps/details?id=com.teslacoilsw.launcher)
