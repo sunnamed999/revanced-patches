@@ -8,15 +8,15 @@ import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.ResourcePatch
 import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patches.youtube.layout.comments.annotations.CommentsCompatibility
-import app.revanced.patches.youtube.misc.mapping.patch.ResourceMappingResourcePatch
+import app.revanced.patches.shared.mapping.misc.patch.ResourceMappingPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.PreferenceScreen
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.PreferenceScreen
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 
 @Name("comments-resource-patch")
 @CommentsCompatibility
-@DependsOn([SettingsPatch::class, ResourceMappingResourcePatch::class])
+@DependsOn([SettingsPatch::class, ResourceMappingPatch::class])
 @Version("0.0.1")
 class CommentsResourcePatch : ResourcePatch {
     companion object {
@@ -31,7 +31,7 @@ class CommentsResourcePatch : ResourcePatch {
                 listOf(
                     SwitchPreference(
                         "revanced_hide_comments_section",
-                        StringResource("revanced_hide_comments_section_title", "Remove comments section"),
+                        StringResource("revanced_hide_comments_section_title", "Hide comments section"),
                         false,
                         StringResource("revanced_hide_comments_section_summary_on", "Comment section is hidden"),
                         StringResource("revanced_hide_comments_section_summary_off", "Comment section is shown")
@@ -55,7 +55,7 @@ class CommentsResourcePatch : ResourcePatch {
             )
         )
 
-        shortsCommentsButtonId = ResourceMappingResourcePatch.resourceMappings.single {
+        shortsCommentsButtonId = ResourceMappingPatch.resourceMappings.single {
             it.type == "drawable" && it.name == "ic_right_comment_32c"
         }.id
 

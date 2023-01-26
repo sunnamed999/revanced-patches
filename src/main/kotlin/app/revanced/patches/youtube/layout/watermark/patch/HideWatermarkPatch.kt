@@ -18,8 +18,8 @@ import app.revanced.patches.youtube.layout.watermark.fingerprints.HideWatermarkF
 import app.revanced.patches.youtube.layout.watermark.fingerprints.HideWatermarkParentFingerprint
 import app.revanced.patches.youtube.misc.integrations.patch.IntegrationsPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 
 @Patch
 @DependsOn([IntegrationsPatch::class, SettingsPatch::class])
@@ -35,11 +35,11 @@ class HideWatermarkPatch : BytecodePatch(
     override fun execute(context: BytecodeContext): PatchResult {
         SettingsPatch.PreferenceScreen.LAYOUT.addPreferences(
             SwitchPreference(
-                "revanced_branding_watermark_enabled",
-                StringResource("revanced_branding_watermark_enabled_title", "Show branding watermark"),
-                false,
-                StringResource("revanced_branding_watermark_summary_on", "Branding watermark is shown"),
-                StringResource("revanced_branding_watermark_summary_off", "Branding watermark is hidden")
+                "revanced_hide_video_watermark",
+                StringResource("revanced_hide_video_watermark_title", "Hide creator watermark on videos"),
+                true,
+                StringResource("revanced_hide_video_watermark_summary_on", "Watermark is hidden"),
+                StringResource("revanced_hide_video_watermark_summary_off", "Watermark is shown")
             )
         )
 

@@ -12,8 +12,8 @@ import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patches.youtube.layout.reels.annotations.HideReelsCompatibility
 import app.revanced.patches.youtube.layout.reels.fingerprints.HideReelsFingerprint
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 
 //@Patch TODO: this is currently in the general-bytecode-ads patch due to the integrations having a preference for including reels or not. Move it here.
 @Name("hide-reels")
@@ -29,11 +29,11 @@ class HideReelsPatch : BytecodePatch(
     override fun execute(context: BytecodeContext): PatchResult {
         SettingsPatch.PreferenceScreen.LAYOUT.addPreferences(
             SwitchPreference(
-                "revanced_reel_button_enabled",
-                StringResource("revanced_reel_button_enabled_title", "Show reels button"),
-                false,
-                StringResource("revanced_reel_button_summary_on", "Reels button is shown"),
-                StringResource("revanced_reel_button_summary_off", "Reels button is hidden")
+                "revanced_hide_reel_button",
+                StringResource("revanced_hide_reel_button_title", "Hide reels button"),
+                true,
+                StringResource("revanced_hide_reel_button_summary_on", "Reels button is hidden"),
+                StringResource("revanced_hide_reel_button_summary_off", "Reels button is shown")
             )
         )
 

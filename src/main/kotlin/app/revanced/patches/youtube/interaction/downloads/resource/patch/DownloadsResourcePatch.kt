@@ -8,14 +8,14 @@ import app.revanced.patcher.patch.PatchResult
 import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.ResourcePatch
 import app.revanced.patcher.patch.annotations.DependsOn
+import app.revanced.patches.shared.settings.preference.impl.*
 import app.revanced.patches.youtube.interaction.downloads.annotation.DownloadsCompatibility
 import app.revanced.patches.youtube.misc.manifest.patch.FixLocaleConfigErrorPatch
 import app.revanced.patches.youtube.misc.playercontrols.resource.patch.BottomControlsResourcePatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.*
 import app.revanced.util.resources.ResourceUtils
-import app.revanced.util.resources.ResourceUtils.Settings.mergeStrings
 import app.revanced.util.resources.ResourceUtils.copyResources
+import app.revanced.util.resources.ResourceUtils.mergeStrings
 
 @Name("downloads-resource-patch")
 @DependsOn([BottomControlsResourcePatch::class, FixLocaleConfigErrorPatch::class, SettingsPatch::class])
@@ -33,8 +33,8 @@ class DownloadsResourcePatch : ResourcePatch {
                         "revanced_downloads",
                         StringResource("revanced_downloads_enabled_title", "Show download button"),
                         true,
-                        StringResource("revanced_downloads_enabled_summary_on", "Download button is visible"),
-                        StringResource("revanced_downloads_enabled_summary_off", "Download button is hidden")
+                        StringResource("revanced_downloads_enabled_summary_on", "Download button is shown"),
+                        StringResource("revanced_downloads_enabled_summary_off", "Download button is not shown")
                     ),
                     TextPreference(
                         "revanced_downloads_package_name",

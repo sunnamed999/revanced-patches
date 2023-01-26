@@ -8,14 +8,14 @@ import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.ResourcePatch
 import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patches.youtube.layout.personalinformation.annotations.HideEmailAddressCompatibility
-import app.revanced.patches.youtube.misc.mapping.patch.ResourceMappingResourcePatch
+import app.revanced.patches.shared.mapping.misc.patch.ResourceMappingPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 
 @Name("hide-email-address-resource-patch")
 @HideEmailAddressCompatibility
-@DependsOn([SettingsPatch::class, ResourceMappingResourcePatch::class])
+@DependsOn([SettingsPatch::class, ResourceMappingPatch::class])
 @Version("0.0.1")
 class HideEmailAddressResourcePatch : ResourcePatch {
     companion object {
@@ -26,14 +26,14 @@ class HideEmailAddressResourcePatch : ResourcePatch {
         SettingsPatch.PreferenceScreen.LAYOUT.addPreferences(
             SwitchPreference(
                 "revanced_hide_email_address",
-                StringResource("revanced_hide_email_address_title", "Hide the email address"),
+                StringResource("revanced_hide_email_address_title", "Hide email in account switcher"),
                 false,
                 StringResource("revanced_hide_email_address_summary_on", "Email address is hidden"),
-                StringResource("revanced_hide_email_address_summary_off", "Email address is visible")
+                StringResource("revanced_hide_email_address_summary_off", "Email address is shown")
             )
         )
 
-        accountSwitcherAccessibilityLabelId = ResourceMappingResourcePatch.resourceMappings.single {
+        accountSwitcherAccessibilityLabelId = ResourceMappingPatch.resourceMappings.single {
             it.type == "string" && it.name == "account_switcher_accessibility_label"
         }.id
 

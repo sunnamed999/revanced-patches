@@ -14,13 +14,13 @@ import app.revanced.patches.youtube.layout.watchinvr.annotations.WatchinVRCompat
 import app.revanced.patches.youtube.layout.watchinvr.fingerprints.WatchinVRFingerprint
 import app.revanced.patches.youtube.misc.integrations.patch.IntegrationsPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 
 @Patch
 @DependsOn([IntegrationsPatch::class, SettingsPatch::class])
 @Name("hide-watch-in-vr")
-@Description("Hides the Watch in VR option from the player settings flyout panel.")
+@Description("Hides the Watch in VR option in the player settings flyout panel.")
 @WatchinVRCompatibility
 @Version("0.0.1")
 class WatchinVRPatch : BytecodePatch(
@@ -32,10 +32,10 @@ class WatchinVRPatch : BytecodePatch(
         SettingsPatch.PreferenceScreen.LAYOUT.addPreferences(
             SwitchPreference(
                 "revanced_hide_watch_in_vr",
-                StringResource("revanced_hide_watch_in_vr_title", "Hide Watch in VR option"),
+                StringResource("revanced_hide_watch_in_vr_title", "Hide watch in VR"),
                 false,
-                StringResource("revanced_hide_watch_in_vr_summary_on", "Watch in VR option is hidden"),
-                StringResource("revanced_hide_watch_in_vr_summary_off", "Watch in VR option is shown")
+                StringResource("revanced_hide_watch_in_vr_summary_on", "Watch in VR player setting is hidden"),
+                StringResource("revanced_hide_watch_in_vr_summary_off", "Watch in VR player setting is shown")
             )
         )
 

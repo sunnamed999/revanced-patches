@@ -8,14 +8,14 @@ import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.ResourcePatch
 import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patches.youtube.layout.hidealbumcards.annotations.AlbumCardsCompatibility
-import app.revanced.patches.youtube.misc.mapping.patch.ResourceMappingResourcePatch
+import app.revanced.patches.shared.mapping.misc.patch.ResourceMappingPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 
 @Name("hide-album-cards-resource-patch")
 @AlbumCardsCompatibility
-@DependsOn([SettingsPatch::class, ResourceMappingResourcePatch::class])
+@DependsOn([SettingsPatch::class, ResourceMappingPatch::class])
 @Version("0.0.1")
 class AlbumCardsResourcePatch : ResourcePatch {
     companion object {
@@ -26,14 +26,14 @@ class AlbumCardsResourcePatch : ResourcePatch {
         SettingsPatch.PreferenceScreen.LAYOUT.addPreferences(
             SwitchPreference(
                 "revanced_hide_album_cards",
-                StringResource("revanced_hide_album_cards_title", "Hide the album cards"),
+                StringResource("revanced_hide_album_cards_title", "Hide album cards"),
                 false,
-                StringResource("revanced_hide_album_cards_summary_on", "Album cards is hidden"),
-                StringResource("revanced_hide_album_cards_summary_off", "Album cards is visible")
+                StringResource("revanced_hide_album_cards_summary_on", "Music album cards are hidden"),
+                StringResource("revanced_hide_album_cards_summary_off", "Music album cards are shown")
             )
         )
 
-        albumCardId = ResourceMappingResourcePatch.resourceMappings.single {
+        albumCardId = ResourceMappingPatch.resourceMappings.single {
             it.type == "layout" && it.name == "album_card"
         }.id
 

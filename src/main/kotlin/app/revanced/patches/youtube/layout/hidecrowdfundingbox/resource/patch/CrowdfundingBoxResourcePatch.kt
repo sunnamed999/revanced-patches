@@ -8,14 +8,14 @@ import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.ResourcePatch
 import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patches.youtube.layout.hidecrowdfundingbox.annotations.CrowdfundingBoxCompatibility
-import app.revanced.patches.youtube.misc.mapping.patch.ResourceMappingResourcePatch
+import app.revanced.patches.shared.mapping.misc.patch.ResourceMappingPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 
 @Name("crowdfunding-box-resource-patch")
 @CrowdfundingBoxCompatibility
-@DependsOn([SettingsPatch::class, ResourceMappingResourcePatch::class])
+@DependsOn([SettingsPatch::class, ResourceMappingPatch::class])
 @Version("0.0.1")
 class CrowdfundingBoxResourcePatch : ResourcePatch {
     companion object {
@@ -26,14 +26,14 @@ class CrowdfundingBoxResourcePatch : ResourcePatch {
         SettingsPatch.PreferenceScreen.LAYOUT.addPreferences(
             SwitchPreference(
                 "revanced_hide_crowdfunding_box",
-                StringResource("revanced_hide_crowdfunding_box_title", "Hide the crowdfunding box"),
+                StringResource("revanced_hide_crowdfunding_box_title", "Hide crowdfunding box"),
                 false,
                 StringResource("revanced_hide_crowdfunding_box_summary_on", "Crowdfunding box is hidden"),
-                StringResource("revanced_hide_crowdfunding_box_summary_off", "Crowdfunding box is visible")
+                StringResource("revanced_hide_crowdfunding_box_summary_off", "Crowdfunding box is shown")
             )
         )
 
-        crowdfundingBoxId = ResourceMappingResourcePatch.resourceMappings.single {
+        crowdfundingBoxId = ResourceMappingPatch.resourceMappings.single {
             it.type == "layout" && it.name == "donation_companion"
         }.id
 

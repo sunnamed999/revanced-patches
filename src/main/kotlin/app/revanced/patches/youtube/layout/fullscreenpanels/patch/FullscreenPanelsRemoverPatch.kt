@@ -18,8 +18,8 @@ import app.revanced.patches.youtube.layout.fullscreenpanels.fingerprints.Fullscr
 import app.revanced.patches.youtube.layout.fullscreenpanels.fingerprints.FullscreenViewAdderParentFingerprint
 import app.revanced.patches.youtube.misc.integrations.patch.IntegrationsPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 
 @Patch
 @Name("disable-fullscreen-panels")
@@ -35,11 +35,11 @@ class FullscreenPanelsRemoverPatch : BytecodePatch(
     override fun execute(context: BytecodeContext): PatchResult {
         SettingsPatch.PreferenceScreen.LAYOUT.addPreferences(
             SwitchPreference(
-                "revanced_fullscreen_panels_enabled",
-                StringResource("revanced_fullscreen_panels_enabled_title", "Show fullscreen panels"),
-                false,
-                StringResource("revanced_fullscreen_panels_summary_on", "Fullscreen panels are shown"),
-                StringResource("revanced_fullscreen_panels_summary_off", "Fullscreen panels are hidden")
+                "revanced_hide_fullscreen_panels",
+                StringResource("revanced_hide_fullscreen_panels_title", "Hide fullscreen panels"),
+                true,
+                StringResource("revanced_hide_fullscreen_panels_summary_on", "Fullscreen panels are hidden"),
+                StringResource("revanced_hide_fullscreen_panels_summary_off", "Fullscreen panels are shown")
             )
         )
 

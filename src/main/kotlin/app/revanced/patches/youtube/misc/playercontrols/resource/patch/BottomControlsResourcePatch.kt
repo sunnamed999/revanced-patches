@@ -67,8 +67,8 @@ class BottomControlsResourcePatch : ResourcePatch {
                 element.attributes.getNamedItem("yt:layout_constraintRight_toLeftOf").nodeValue =
                     "$namespace/$lastLeftOf"
 
-                // set lastLeftOf attribute to the the current element
-                val nameSpaceLength = 4
+                // set lastLeftOf attribute to the current element
+                val nameSpaceLength = 5
                 lastLeftOf = element.attributes.getNamedItem("android:id").nodeValue.substring(nameSpaceLength)
 
                 // copy the element

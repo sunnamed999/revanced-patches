@@ -16,8 +16,8 @@ import app.revanced.patches.youtube.misc.openlinksdirectly.annotations.OpenLinks
 import app.revanced.patches.youtube.misc.openlinksdirectly.fingerprints.OpenLinksDirectlyFingerprintPrimary
 import app.revanced.patches.youtube.misc.openlinksdirectly.fingerprints.OpenLinksDirectlyFingerprintSecondary
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 import org.jf.dexlib2.iface.instruction.Instruction
 import org.jf.dexlib2.iface.instruction.formats.Instruction11x
 import org.jf.dexlib2.iface.instruction.formats.Instruction35c
@@ -25,7 +25,7 @@ import org.jf.dexlib2.iface.instruction.formats.Instruction35c
 @Patch
 @DependsOn([IntegrationsPatch::class, SettingsPatch::class])
 @Name("open-links-directly")
-@Description("Bypasses redirect links and allows opening links directly.")
+@Description("Bypasses https://youtube.com/redirect URLs.")
 @OpenLinksDirectlyCompatibility
 @Version("0.0.1")
 class OpenLinksDirectlyPatch : BytecodePatch(
@@ -37,10 +37,10 @@ class OpenLinksDirectlyPatch : BytecodePatch(
         SettingsPatch.PreferenceScreen.MISC.addPreferences(
             SwitchPreference(
                 "revanced_uri_redirect",
-                StringResource("revanced_uri_redirect_title", "Open links directly"),
+                StringResource("revanced_uri_redirect_title", "Bypass URL redirects"),
                 true,
-                StringResource("revanced_uri_redirect_summary_on", "Enabled"),
-                StringResource("revanced_uri_redirect_summary_off", "Disabled")
+                StringResource("revanced_uri_redirect_summary_on", "Bypassing URL redirects"),
+                StringResource("revanced_uri_redirect_summary_off", "Following default redirect policy")
             )
         )
 

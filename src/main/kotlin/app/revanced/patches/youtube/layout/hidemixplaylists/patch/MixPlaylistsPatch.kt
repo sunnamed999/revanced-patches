@@ -17,8 +17,8 @@ import app.revanced.patches.youtube.layout.hidemixplaylists.fingerprints.CreateM
 import app.revanced.patches.youtube.layout.hidemixplaylists.fingerprints.SecondCreateMixPlaylistFingerprint
 import app.revanced.patches.youtube.misc.integrations.patch.IntegrationsPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction
 
 @Patch
@@ -35,11 +35,11 @@ class MixPlaylistsPatch : BytecodePatch(
     override fun execute(context: BytecodeContext): PatchResult {
         SettingsPatch.PreferenceScreen.LAYOUT.addPreferences(
             SwitchPreference(
-                "revanced_mix_playlists_hidden",
-                StringResource("revanced_mix_playlists_title", "Hide mix playlists"),
+                "revanced_hide_mix_playlists",
+                StringResource("revanced_hide_mix_playlists_title", "Hide mix playlists"),
                 false,
-                StringResource("revanced_mix_playlists_summary_on", "Mix playlists are hidden"),
-                StringResource("revanced_mix_playlists_summary_off", "Mix playlists are shown")
+                StringResource("revanced_hide_mix_playlists_summary_on", "Mix playlists are hidden"),
+                StringResource("revanced_hide_mix_playlists_summary_off", "Mix playlists are shown")
             )
         )
 

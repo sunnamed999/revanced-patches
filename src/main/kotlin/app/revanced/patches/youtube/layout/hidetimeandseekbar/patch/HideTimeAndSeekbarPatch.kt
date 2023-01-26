@@ -5,18 +5,20 @@ import app.revanced.patcher.annotation.Name
 import app.revanced.patcher.annotation.Version
 import app.revanced.patcher.data.BytecodeContext
 import app.revanced.patcher.extensions.addInstructions
+import app.revanced.patcher.fingerprint.method.impl.MethodFingerprint.Companion.resolve
 import app.revanced.patcher.patch.BytecodePatch
 import app.revanced.patcher.patch.PatchResult
 import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patcher.patch.annotations.Patch
+import app.revanced.patches.shared.fingerprints.SeekbarFingerprint
+import app.revanced.patches.shared.fingerprints.SeekbarOnDrawFingerprint
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 import app.revanced.patches.youtube.layout.hidetimeandseekbar.annotations.HideTimeAndSeekbarCompatibility
 import app.revanced.patches.youtube.layout.hidetimeandseekbar.fingerprints.TimeCounterFingerprint
-import app.revanced.patches.youtube.layout.sponsorblock.bytecode.fingerprints.CreateVideoPlayerSeekbarFingerprint
 import app.revanced.patches.youtube.misc.integrations.patch.IntegrationsPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
 
 @Patch
 @DependsOn([IntegrationsPatch::class, SettingsPatch::class])
@@ -26,7 +28,7 @@ import app.revanced.patches.youtube.misc.settings.framework.components.impl.Swit
 @Version("0.0.1")
 class HideTimeAndSeekbarPatch : BytecodePatch(
     listOf(
-        CreateVideoPlayerSeekbarFingerprint, TimeCounterFingerprint
+        SeekbarFingerprint, TimeCounterFingerprint
     )
 ) {
     override fun execute(context: BytecodeContext): PatchResult {
@@ -36,11 +38,13 @@ class HideTimeAndSeekbarPatch : BytecodePatch(
                 StringResource("revanced_hide_time_and_seekbar_title", "Hide time and seekbar"),
                 false,
                 StringResource("revanced_hide_time_and_seekbar_summary_on", "Time and seekbar are hidden"),
-                StringResource("revanced_hide_time_and_seekbar_summary_off", "Time and seekbar are visible")
+                StringResource("revanced_hide_time_and_seekbar_summary_off", "Time and seekbar are shown")
             )
         )
 
-        val createVideoPlayerSeekbarMethod = CreateVideoPlayerSeekbarFingerprint.result!!.mutableMethod
+        val createVideoPlayerSeekbarMethod = SeekbarFingerprint.result!!.let {
+            SeekbarOnDrawFingerprint.apply { resolve(context, it.mutableClass) }
+        }.result!!.mutableMethod
 
         createVideoPlayerSeekbarMethod.addInstructions(
             0, """
