@@ -1,7 +1,7 @@
 package app.revanced.util.microg
 
 import app.revanced.patcher.data.ResourceContext
-import app.revanced.util.resources.ResourceUtils.Settings.mergeStrings
+import app.revanced.util.resources.ResourceUtils.mergeStrings
 
 /**
  * Helper class for applying resource patches needed for the microg-support patches.
@@ -14,7 +14,8 @@ internal object MicroGResourceHelper {
      * @param context The resource context.
      * @param stringsHost The file which hosts the strings.
      */
-    fun addStrings(context: ResourceContext, stringsHost: String = "microg/host/values/strings.xml") = context.mergeStrings(stringsHost)
+    fun addStrings(context: ResourceContext, stringsHost: String = "microg/host/values/strings.xml") =
+        context.mergeStrings(stringsHost)
 
     /**
      * Patch the manifest to work with MicroG.
@@ -47,6 +48,9 @@ internal object MicroGResourceHelper {
             ).replace(
                 "$fromPackageName.permission.C2D_MESSAGE",
                 "$toPackageName.permission.C2D_MESSAGE"
+            ).replace(
+                "$fromPackageName.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+                "$toPackageName.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
             ).replace(
                 "com.google.android.c2dm",
                 "${Constants.MICROG_VENDOR}.android.c2dm"

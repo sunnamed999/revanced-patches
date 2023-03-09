@@ -7,11 +7,11 @@ import app.revanced.patcher.data.ResourceContext
 import app.revanced.patcher.patch.*
 import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patcher.patch.annotations.Patch
+import app.revanced.patches.shared.settings.preference.impl.StringResource
+import app.revanced.patches.shared.settings.preference.impl.SwitchPreference
 import app.revanced.patches.youtube.misc.debugging.annotations.DebuggingCompatibility
 import app.revanced.patches.youtube.misc.integrations.patch.IntegrationsPatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.SwitchPreference
 import org.w3c.dom.Element
 
 @Patch
@@ -23,12 +23,39 @@ import org.w3c.dom.Element
 class DebuggingPatch : ResourcePatch {
     override fun execute(context: ResourceContext): PatchResult {
         SettingsPatch.PreferenceScreen.MISC.addPreferences(
-            SwitchPreference(
-                "revanced_debug_enabled",
+            app.revanced.patches.shared.settings.preference.impl.PreferenceScreen(
+                "revanced_debug",
                 StringResource("revanced_debug_title", "Debugging"),
-                false,
-                StringResource("revanced_debug_on", "Debug logs are enabled"),
-                StringResource("revanced_debug_off", "Debug logs are disabled")
+                listOf(
+                    SwitchPreference(
+                        "revanced_debug_enabled",
+                        StringResource("revanced_debug_enabled_title", "Debug logging"),
+                        false,
+                        StringResource("revanced_debug_summary_on", "Debug logs are enabled"),
+                        StringResource("revanced_debug_summary_off", "Debug logs are disabled")
+                    ),
+                    SwitchPreference(
+                        "revanced_debug_stacktrace_enabled",
+                        StringResource(
+                            "revanced_debug_stacktrace_enabled_title",
+                            "Log stack traces"
+                        ),
+                        false,
+                        StringResource("revanced_debug_stacktrace_summary_on", "Debug logs include stack trace"),
+                        StringResource("revanced_debug_stacktrace_summary_off", "Debug logs do not include stack trace")
+                    ),
+                    SwitchPreference(
+                        "revanced_debug_toast_on_error_enabled",
+                        StringResource(
+                            "revanced_debug_toast_on_error_enabled_title",
+                            "Show toast on ReVanced error"
+                        ),
+                        true,
+                        StringResource("revanced_debug_toast_on_error_summary_on", "Toast shown if error occurs"),
+                        StringResource("revanced_debug_toast_on_error_summary_off", "Toast not shown if error occurs")
+                    ),
+                ),
+                StringResource("revanced_debug_summary", "Enable or disable debugging options")
             )
         )
 

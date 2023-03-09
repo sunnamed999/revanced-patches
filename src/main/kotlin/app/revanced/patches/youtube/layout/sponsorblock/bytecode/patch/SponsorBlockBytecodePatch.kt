@@ -16,13 +16,15 @@ import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patcher.patch.annotations.Patch
 import app.revanced.patcher.util.proxy.mutableTypes.MutableMethod
-import app.revanced.patches.youtube.layout.autocaptions.fingerprints.StartVideoInformerFingerprint
+import app.revanced.patches.shared.fingerprints.SeekbarFingerprint
+import app.revanced.patches.shared.fingerprints.SeekbarOnDrawFingerprint
+import app.revanced.patches.shared.mapping.misc.patch.ResourceMappingPatch
 import app.revanced.patches.youtube.layout.sponsorblock.annotations.SponsorBlockCompatibility
 import app.revanced.patches.youtube.layout.sponsorblock.bytecode.fingerprints.*
 import app.revanced.patches.youtube.layout.sponsorblock.resource.patch.SponsorBlockResourcePatch
 import app.revanced.patches.youtube.misc.integrations.patch.IntegrationsPatch
-import app.revanced.patches.youtube.misc.mapping.patch.ResourceMappingResourcePatch
 import app.revanced.patches.youtube.misc.playercontrols.bytecode.patch.PlayerControlsBytecodePatch
+import app.revanced.patches.youtube.misc.playertype.patch.PlayerTypeHookPatch
 import app.revanced.patches.youtube.misc.video.information.patch.VideoInformationPatch
 import app.revanced.patches.youtube.misc.video.videoid.patch.VideoIdPatch
 import org.jf.dexlib2.Opcode
@@ -37,23 +39,22 @@ import org.jf.dexlib2.iface.reference.StringReference
     dependencies = [
         VideoInformationPatch::class, // updates video information and adds method to seek in video
         PlayerControlsBytecodePatch::class,
+        PlayerTypeHookPatch::class,
         IntegrationsPatch::class,
         SponsorBlockResourcePatch::class,
         VideoIdPatch::class
     ]
 )
 @Name("sponsorblock")
-@Description("Integrate SponsorBlock.")
+@Description("Integrates SponsorBlock which allows skipping video segments such as sponsored content.")
 @SponsorBlockCompatibility
 @Version("0.0.1")
 class SponsorBlockBytecodePatch : BytecodePatch(
     listOf(
-        CreateVideoPlayerSeekbarFingerprint,
+        SeekbarFingerprint,
         NextGenWatchLayoutFingerprint,
         AppendTimeFingerprint,
         PlayerOverlaysLayoutInitFingerprint,
-        ShortsPlayerConstructorFingerprint,
-        StartVideoInformerFingerprint
     )
 ) {
 
@@ -85,7 +86,9 @@ class SponsorBlockBytecodePatch : BytecodePatch(
         /*
          Seekbar drawing
          */
-        val seekbarSignatureResult = CreateVideoPlayerSeekbarFingerprint.result!!
+        val seekbarSignatureResult = SeekbarFingerprint.result!!.let {
+            SeekbarOnDrawFingerprint.apply { resolve(context, it.mutableClass) }
+        }.result!!
         val seekbarMethod = seekbarSignatureResult.mutableMethod
         val seekbarMethodInstructions = seekbarMethod.implementation!!.instructions
 
@@ -96,7 +99,7 @@ class SponsorBlockBytecodePatch : BytecodePatch(
             if (instruction.opcode != Opcode.MOVE_OBJECT_FROM16) continue
             seekbarMethod.addInstruction(
                 index + 1,
-                "invoke-static {v0}, $INTEGRATIONS_PLAYER_CONTROLLER_CLASS_DESCRIPTOR->setSponsorBarRect(Ljava/lang/Object;)V"
+                "invoke-static/range {p0 .. p0}, $INTEGRATIONS_PLAYER_CONTROLLER_CLASS_DESCRIPTOR->setSponsorBarRect(Ljava/lang/Object;)V"
             )
             break
         }
@@ -120,10 +123,10 @@ class SponsorBlockBytecodePatch : BytecodePatch(
         /*
         Set rectangle absolute left and right positions
         */
-        val drawRectangleInstructions = seekbarMethodInstructions.filter {
-            it is ReferenceInstruction && (it.reference as? MethodReference)?.name == "drawRect" && it is FiveRegisterInstruction
-        }.map { // TODO: improve code
-            seekbarMethodInstructions.indexOf(it) to (it as FiveRegisterInstruction).registerD
+        val drawRectangleInstructions = seekbarMethodInstructions.withIndex().filter { (_, instruction) ->
+            instruction is ReferenceInstruction && (instruction.reference as? MethodReference)?.name == "drawRect"
+        }.map { (index, instruction) -> // TODO: improve code
+            index to (instruction as FiveRegisterInstruction).registerD
         }
 
         val (indexRight, rectangleRightRegister) = drawRectangleInstructions[0]
@@ -158,9 +161,9 @@ class SponsorBlockBytecodePatch : BytecodePatch(
         val controlsMethodResult = PlayerControlsBytecodePatch.showPlayerControlsFingerprintResult
 
         val controlsLayoutStubResourceId =
-            ResourceMappingResourcePatch.resourceMappings.single { it.type == "id" && it.name == "controls_layout_stub" }.id
+            ResourceMappingPatch.resourceMappings.single { it.type == "id" && it.name == "controls_layout_stub" }.id
         val zoomOverlayResourceId =
-            ResourceMappingResourcePatch.resourceMappings.single { it.type == "id" && it.name == "video_zoom_overlay_stub" }.id
+            ResourceMappingPatch.resourceMappings.single { it.type == "id" && it.name == "video_zoom_overlay_stub" }.id
 
         methods@ for (method in controlsMethodResult.mutableClass.methods) {
             val instructions = method.implementation?.instructions!!
@@ -256,31 +259,14 @@ class SponsorBlockBytecodePatch : BytecodePatch(
                     if (it.opcode.ordinal != Opcode.CONST_STRING.ordinal) continue
 
                     when (((it as ReferenceInstruction).reference as StringReference).string) {
-                        "replaceMeWithsetSponsorBarRect" ->
-                            method.replaceStringInstruction(index, it, rectangleFieldName)
-
-                        "replaceMeWithsetMillisecondMethod" ->
-                            method.replaceStringInstruction(index, it, "seekHelper")
+                        "replaceMeWithsetSponsorBarRect" -> method.replaceStringInstruction(
+                            index,
+                            it,
+                            rectangleFieldName
+                        )
                     }
                 }
             } ?: return PatchResultError("Could not find the method which contains the replaceMeWith* strings")
-
-        val startVideoInformerMethod = StartVideoInformerFingerprint.result!!.mutableMethod
-        startVideoInformerMethod.addInstructions(
-            0, """
-            const/4 v0, 0x0
-            sput-boolean v0, $INTEGRATIONS_PLAYER_CONTROLLER_CLASS_DESCRIPTOR->shorts_playing:Z
-        """
-        )
-
-        val shortsPlayerConstructorMethod = ShortsPlayerConstructorFingerprint.result!!.mutableMethod
-
-        shortsPlayerConstructorMethod.addInstructions(
-            0, """
-            const/4 v0, 0x1
-            sput-boolean v0, $INTEGRATIONS_PLAYER_CONTROLLER_CLASS_DESCRIPTOR->shorts_playing:Z
-        """
-        )
 
         // TODO: isSBChannelWhitelisting implementation
 

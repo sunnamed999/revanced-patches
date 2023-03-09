@@ -5,9 +5,8 @@ import app.revanced.patcher.annotation.Package
 
 @Compatibility(
     [Package(
-        "com.google.android.youtube", arrayOf("17.36.37", "17.41.37", "17.42.35", "17.43.36")
+        "com.google.android.youtube", arrayOf("17.49.37", "18.03.42", "18.05.40")
     )]
 )
 @Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
 internal annotation class RememberVideoQualityCompatibility
