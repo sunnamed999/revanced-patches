@@ -8,12 +8,9 @@ import app.revanced.patcher.data.ResourceContext
 import app.revanced.patcher.patch.PatchResult
 import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.ResourcePatch
-import app.revanced.patcher.patch.annotations.DependsOn
-import app.revanced.patches.youtube.misc.manifest.patch.FixLocaleConfigErrorPatch
 import app.revanced.patches.youtube.misc.playercontrols.annotation.PlayerControlsCompatibility
 
 @Name("bottom-controls-resource-patch")
-@DependsOn([FixLocaleConfigErrorPatch::class])
 @Description("Manages the resources for the bottom controls of the YouTube player.")
 @PlayerControlsCompatibility
 @Version("0.0.1")
@@ -67,8 +64,8 @@ class BottomControlsResourcePatch : ResourcePatch {
                 element.attributes.getNamedItem("yt:layout_constraintRight_toLeftOf").nodeValue =
                     "$namespace/$lastLeftOf"
 
-                // set lastLeftOf attribute to the the current element
-                val nameSpaceLength = 4
+                // set lastLeftOf attribute to the current element
+                val nameSpaceLength = 5
                 lastLeftOf = element.attributes.getNamedItem("android:id").nodeValue.substring(nameSpaceLength)
 
                 // copy the element

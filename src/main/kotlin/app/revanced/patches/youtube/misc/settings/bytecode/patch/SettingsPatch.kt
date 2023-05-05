@@ -1,5 +1,6 @@
 package app.revanced.patches.youtube.misc.settings.bytecode.patch
 
+import app.revanced.extensions.toErrorResult
 import app.revanced.patcher.annotation.Description
 import app.revanced.patcher.annotation.Name
 import app.revanced.patcher.annotation.Version
@@ -10,21 +11,15 @@ import app.revanced.patcher.patch.BytecodePatch
 import app.revanced.patcher.patch.PatchResult
 import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.annotations.DependsOn
-import app.revanced.patcher.patch.annotations.Patch
+import app.revanced.patches.shared.settings.preference.impl.Preference
+import app.revanced.patches.shared.settings.util.AbstractPreferenceScreen
 import app.revanced.patches.youtube.misc.integrations.patch.IntegrationsPatch
-import app.revanced.patches.youtube.misc.settings.annotations.SettingsCompatibility
 import app.revanced.patches.youtube.misc.settings.bytecode.fingerprints.LicenseActivityFingerprint
 import app.revanced.patches.youtube.misc.settings.bytecode.fingerprints.ThemeSetterAppFingerprint
 import app.revanced.patches.youtube.misc.settings.bytecode.fingerprints.ThemeSetterSystemFingerprint
-import app.revanced.patches.youtube.misc.settings.framework.components.BasePreference
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.Preference
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.PreferenceScreen
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
 import app.revanced.patches.youtube.misc.settings.resource.patch.SettingsResourcePatch
 import org.jf.dexlib2.util.MethodUtil
-import java.io.Closeable
 
-@Patch
 @DependsOn(
     [
         IntegrationsPatch::class,
@@ -33,7 +28,6 @@ import java.io.Closeable
 )
 @Name("settings")
 @Description("Adds settings for ReVanced to YouTube.")
-@SettingsCompatibility
 @Version("0.0.1")
 class SettingsPatch : BytecodePatch(
     listOf(LicenseActivityFingerprint, ThemeSetterSystemFingerprint, ThemeSetterAppFingerprint)
@@ -47,53 +41,46 @@ class SettingsPatch : BytecodePatch(
         ) = "invoke-static {$registers}, $classDescriptor->$methodName($parameters)V"
 
         // apply the current theme of the settings page
-        with(ThemeSetterSystemFingerprint.result!!) {
-            with(mutableMethod) {
-                val call = buildInvokeInstructionsString()
-
+        ThemeSetterSystemFingerprint.result!!.let { result ->
+            val call = buildInvokeInstructionsString()
+            result.mutableMethod.apply {
                 addInstruction(
-                    scanResult.patternScanResult!!.startIndex,
-                    call
+                    result.scanResult.patternScanResult!!.startIndex, call
                 )
-
-                addInstruction(
-                    mutableMethod.implementation!!.instructions.size - 1,
-                    call
+                addInstructions(
+                    implementation!!.instructions.size - 1, call
                 )
             }
         }
 
         // set the theme based on the preference of the app
-        with(ThemeSetterAppFingerprint.result!!) {
-            with(mutableMethod) {
-                fun buildInstructionsString(theme: Int) = """
+        ThemeSetterAppFingerprint.result?.apply {
+            fun buildInstructionsString(theme: Int) = """
                     const/4 v0, 0x$theme
                     ${buildInvokeInstructionsString(parameters = "I")}
                 """
 
-                addInstructions(
-                    scanResult.patternScanResult!!.endIndex + 1,
-                    buildInstructionsString(1)
-                )
-                addInstructions(
-                    scanResult.patternScanResult!!.endIndex - 7,
-                    buildInstructionsString(0)
-                )
+            val patternScanResult = scanResult.patternScanResult!!
 
+            mutableMethod.apply {
                 addInstructions(
-                    scanResult.patternScanResult!!.endIndex - 9,
-                    buildInstructionsString(1)
+                    patternScanResult.endIndex + 1, buildInstructionsString(1)
                 )
                 addInstructions(
-                    mutableMethod.implementation!!.instructions.size - 2,
-                    buildInstructionsString(0)
+                    patternScanResult.endIndex - 7, buildInstructionsString(0)
+                )
+                addInstructions(
+                    patternScanResult.endIndex - 9, buildInstructionsString(1)
+                )
+                addInstructions(
+                    implementation!!.instructions.size - 2, buildInstructionsString(0)
                 )
             }
-        }
+        } ?: return ThemeSetterAppFingerprint.toErrorResult()
 
         // set the theme based on the preference of the device
-        with(LicenseActivityFingerprint.result!!) licenseActivity@{
-            with(mutableMethod) {
+        LicenseActivityFingerprint.result!!.apply licenseActivity@{
+            mutableMethod.apply {
                 fun buildSettingsActivityInvokeString(
                     registers: String = "p0",
                     classDescriptor: String = SETTINGS_ACTIVITY_DESCRIPTOR,
@@ -103,8 +90,7 @@ class SettingsPatch : BytecodePatch(
 
                 // initialize the settings
                 addInstructions(
-                    1,
-                    """
+                    1, """
                         ${buildSettingsActivityInvokeString()}
                         return-void
                     """
@@ -115,7 +101,7 @@ class SettingsPatch : BytecodePatch(
             }
 
             // remove method overrides
-            with(mutableClass) {
+            mutableClass.apply {
                 methods.removeIf { it.name != "onCreate" && !MethodUtil.isConstructor(it) }
             }
         }
@@ -134,11 +120,10 @@ class SettingsPatch : BytecodePatch(
         fun addString(identifier: String, value: String, formatted: Boolean = true) =
             SettingsResourcePatch.addString(identifier, value, formatted)
 
-        fun addPreferenceScreen(preferenceScreen: app.revanced.patches.youtube.misc.settings.framework.components.impl.PreferenceScreen) =
+        fun addPreferenceScreen(preferenceScreen: app.revanced.patches.shared.settings.preference.impl.PreferenceScreen) =
             SettingsResourcePatch.addPreferenceScreen(preferenceScreen)
 
-        fun addPreference(preference: Preference) =
-            SettingsResourcePatch.addPreference(preference)
+        fun addPreference(preference: Preference) = SettingsResourcePatch.addPreference(preference)
 
         fun renameIntentsTargetPackage(newPackage: String) {
             SettingsResourcePatch.overrideIntentsTargetPackage = newPackage
@@ -148,38 +133,16 @@ class SettingsPatch : BytecodePatch(
     /**
      * Preference screens patches should add their settings to.
      */
-    internal enum class PreferenceScreen(
-        private val key: String,
-        private val title: String,
-        private val summary: String? = null,
-        private val preferences: MutableList<BasePreference> = mutableListOf()
-    ) : Closeable {
-        ADS("ads", "Ads", "Ad related settings"),
-        INTERACTIONS("interactions", "Interaction", "Settings related to interactions"),
-        LAYOUT("layout", "Layout", "Settings related to the layout"),
-        MISC("misc", "Miscellaneous", "Miscellaneous patches");
+    internal object PreferenceScreen : AbstractPreferenceScreen() {
+        val ADS = Screen("ads", "Ads", "Ad related settings")
+        val INTERACTIONS = Screen("interactions", "Interaction", "Settings related to interactions")
+        val LAYOUT = Screen("layout", "Layout", "Settings related to the layout")
+        val MISC = Screen("misc", "Misc", "Miscellaneous patches")
 
-        override fun close() {
-            if (preferences.size == 0) return
-
-            addPreferenceScreen(
-                PreferenceScreen(
-                    key,
-                    StringResource("${key}_title", title),
-                    preferences,
-                    summary?.let { summary ->
-                        StringResource("${key}_summary", summary)
-                    }
-                )
-            )
+        override fun commit(screen: app.revanced.patches.shared.settings.preference.impl.PreferenceScreen) {
+            addPreferenceScreen(screen)
         }
-
-        /**
-         * Add preferences to the preference screen.
-         */
-        fun addPreferences(vararg preferences: BasePreference) = this.preferences.addAll(preferences)
     }
 
-    override fun close() = PreferenceScreen.values().forEach(PreferenceScreen::close)
-
+    override fun close() = PreferenceScreen.close()
 }

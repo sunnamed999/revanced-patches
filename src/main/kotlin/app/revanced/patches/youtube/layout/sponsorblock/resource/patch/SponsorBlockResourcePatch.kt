@@ -7,25 +7,21 @@ import app.revanced.patcher.patch.PatchResult
 import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.ResourcePatch
 import app.revanced.patcher.patch.annotations.DependsOn
+import app.revanced.patches.shared.mapping.misc.patch.ResourceMappingPatch
+import app.revanced.patches.shared.settings.preference.impl.Preference
+import app.revanced.patches.shared.settings.preference.impl.StringResource
 import app.revanced.patches.youtube.layout.sponsorblock.annotations.SponsorBlockCompatibility
-import app.revanced.patches.youtube.misc.manifest.patch.FixLocaleConfigErrorPatch
-import app.revanced.patches.youtube.misc.mapping.patch.ResourceMappingResourcePatch
 import app.revanced.patches.youtube.misc.settings.bytecode.patch.SettingsPatch
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.Preference
-import app.revanced.patches.youtube.misc.settings.framework.components.impl.StringResource
 import app.revanced.util.resources.ResourceUtils
-import app.revanced.util.resources.ResourceUtils.Settings.mergeStrings
 import app.revanced.util.resources.ResourceUtils.copyResources
 import app.revanced.util.resources.ResourceUtils.copyXmlNode
+import app.revanced.util.resources.ResourceUtils.mergeStrings
 
 @Name("sponsorblock-resource-patch")
 @SponsorBlockCompatibility
-@DependsOn([FixLocaleConfigErrorPatch::class, SettingsPatch::class, ResourceMappingResourcePatch::class])
+@DependsOn([SettingsPatch::class, ResourceMappingPatch::class])
 @Version("0.0.1")
 class SponsorBlockResourcePatch : ResourcePatch {
-    companion object {
-        internal var reelButtonGroupResourceId: Long = 0
-    }
 
     override fun execute(context: ResourceContext): PatchResult {
         val youtubePackage = "com.google.android.youtube"
@@ -99,17 +95,13 @@ class SponsorBlockResourcePatch : ResourcePatch {
                 if (!(view.hasAttributes() && view.attributes.getNamedItem("android:id").nodeValue.endsWith("live_chat_overlay_button"))) continue
 
                 // voting button id from the voting button view from the youtube_controls_layout.xml host file
-                val votingButtonId = "@+id/voting_button"
+                val votingButtonId = "@+id/sb_voting_button"
 
                 view.attributes.getNamedItem("android:layout_toStartOf").nodeValue = votingButtonId
 
                 break
             }
         }.close() // close afterwards
-
-        reelButtonGroupResourceId = ResourceMappingResourcePatch.resourceMappings.single {
-            it.type == "id" && it.name == "reel_persistent_edu_button_group"
-        }.id
 
         return PatchResultSuccess()
     }

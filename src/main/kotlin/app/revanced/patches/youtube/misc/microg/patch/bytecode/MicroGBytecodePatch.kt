@@ -4,15 +4,15 @@ import app.revanced.patcher.annotation.Description
 import app.revanced.patcher.annotation.Name
 import app.revanced.patcher.annotation.Version
 import app.revanced.patcher.data.BytecodeContext
-import app.revanced.patcher.extensions.addInstruction
 import app.revanced.patcher.patch.BytecodePatch
 import app.revanced.patcher.patch.PatchResult
 import app.revanced.patcher.patch.PatchResultSuccess
 import app.revanced.patcher.patch.annotations.DependsOn
 import app.revanced.patcher.patch.annotations.Patch
-import app.revanced.shared.fingerprints.WatchWhileActivityFingerprint
-import app.revanced.patches.youtube.layout.castbutton.patch.HideCastButtonPatch
-import app.revanced.patches.youtube.misc.clientspoof.patch.ClientSpoofPatch
+import app.revanced.patches.shared.fingerprints.WatchWhileActivityFingerprint
+import app.revanced.patches.shared.misc.fix.spoof.patch.ClientSpoofPatch
+import app.revanced.patches.youtube.layout.buttons.cast.patch.HideCastButtonPatch
+import app.revanced.patches.youtube.misc.fix.playback.patch.SpoofSignatureVerificationPatch
 import app.revanced.patches.youtube.misc.microg.annotations.MicroGPatchCompatibility
 import app.revanced.patches.youtube.misc.microg.fingerprints.*
 import app.revanced.patches.youtube.misc.microg.patch.resource.MicroGResourcePatch
@@ -25,16 +25,14 @@ import app.revanced.util.microg.MicroGBytecodeHelper
     [
         MicroGResourcePatch::class,
         HideCastButtonPatch::class,
-        ClientSpoofPatch::class
     ]
 )
-@Name("microg-support")
+@Name("vanced-microg-support")
 @Description("Allows YouTube ReVanced to run without root and under a different package name with Vanced MicroG.")
 @MicroGPatchCompatibility
 @Version("0.0.1")
 class MicroGBytecodePatch : BytecodePatch(
     listOf(
-        IntegrityCheckFingerprint,
         ServiceCheckFingerprint,
         GooglePlayUtilityFingerprint,
         CastDynamiteModuleFingerprint,
@@ -59,7 +57,6 @@ class MicroGBytecodePatch : BytecodePatch(
                 REVANCED_PACKAGE_NAME
             ),
             listOf(
-                IntegrityCheckFingerprint,
                 ServiceCheckFingerprint,
                 GooglePlayUtilityFingerprint,
                 CastDynamiteModuleFingerprint,
